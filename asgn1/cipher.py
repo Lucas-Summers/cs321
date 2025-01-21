@@ -51,18 +51,25 @@ def decrypt_aes(key, data, mode):
         iv = data[:16]
         ciphertext = data[16:]
         cipher = AES.new(key, AES.MODE_CBC, iv)
-        plaintext = pkcs7_unpad(cipher.decrypt(ciphertext), AES.block_size)
+        plaintext = pkcs7_unpad(cipher.decrypt(ciphertext))
     else:
         raise ValueError("Not a valid mode")
     return plaintext
 
-if __name__ == "__main__":
-    with open(sys.argv[1], 'rb') as f:
+def encrypt_bmp_file(infile, outfile, mode):
+    with open(infile, 'rb') as f:
         header = f.read(54)  # Adjust if the header is 138 bytes
         data = f.read()
 
     key = get_random_bytes(16)
-    encrypted_data = encrypt_aes(key, data, sys.argv[3])
+    encrypted_data = encrypt_aes(key, data, mode)
 
-    with open(sys.argv[2], 'wb') as f:
+    with open(outfile, 'wb') as f:
         f.write(header + encrypted_data)
+
+    return key
+
+if __name__ == "__main__":
+    key = encrypt_bmp_file(sys.argv[1], sys.argv[2], sys.argv[3])
+    print(key)
+    
