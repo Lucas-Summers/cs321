@@ -31,8 +31,7 @@ def aes_cbc_encrypt(plaintext, key, iv):
         prev_block = encrypted_block
     return iv + ciphertext
 
-def encrypt_aes(data, mode):
-    key = get_random_bytes(16)
+def encrypt_aes(key, data, mode):
     padded_data = pkcs7_pad(data)
     
     if mode == 'ecb':
@@ -61,8 +60,9 @@ if __name__ == "__main__":
     with open(sys.argv[1], 'rb') as f:
         header = f.read(54)  # Adjust if the header is 138 bytes
         data = f.read()
-    
-    encrypted_data = encrypt_aes(data, sys.argv[3])
+
+    key = get_random_bytes(16)
+    encrypted_data = encrypt_aes(key, data, sys.argv[3])
 
     with open(sys.argv[2], 'wb') as f:
         f.write(header + encrypted_data)
