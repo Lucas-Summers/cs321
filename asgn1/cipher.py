@@ -31,25 +31,38 @@ def aes_cbc_encrypt(plaintext, key, iv):
         prev_block = encrypted_block
     return iv + ciphertext
 
-def process_bmp(file_path, output_file, mode):
-    with open(file_path, 'rb') as f:
-        header = f.read(54)  # Adjust if the header is 138 bytes
-        data = f.read()
-    
+def encrypt_aes(data, mode):
     key = get_random_bytes(16)
-    iv = get_random_bytes(16)
-    
     padded_data = pkcs7_pad(data)
     
     if mode == 'ecb':
         encrypted_data = aes_ecb_encrypt(padded_data, key)
     elif mode == 'cbc':
+        iv = get_random_bytes(16)
         encrypted_data = aes_cbc_encrypt(padded_data, key, iv)
     else:
+        raise ValueError("Not a valid mode")    
+    return encrypted_data
+
+def decrypt_aes(key, data, mode):
+    if mode == 'ecb':
+        cipher = AES.new(key, AES.MODE_ECB)
+        plaintext = pkcs7_unpad(cipher.decrypt(data), AES.block_size)
+    elif mode == 'cbc':
+        iv = data[:16]
+        ciphertext = data[16:]
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        plaintext = pkcs7_unpad(cipher.decrypt(ciphertext), AES.block_size)
+    else:
         raise ValueError("Not a valid mode")
-    
-    with open(output_file, 'wb') as f:
-        f.write(header + encrypted_data)
+    return plaintext
 
 if __name__ == "__main__":
-    process_bmp(sys.argv[1], sys.argv[2], sys.argv[3])
+    with open(sys.argv[1], 'rb') as f:
+        header = f.read(54)  # Adjust if the header is 138 bytes
+        data = f.read()
+    
+    encrypted_data = encrypt_aes(data, sys.argv[3])
+
+    with open(sys.argv[2], 'wb') as f:
+        f.write(header + encrypted_data)
