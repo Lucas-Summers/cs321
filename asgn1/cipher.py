@@ -29,9 +29,9 @@ def aes_cbc_encrypt(plaintext, key, iv):
         encrypted_block = cipher.encrypt(block)
         ciphertext += encrypted_block
         prev_block = encrypted_block
-    return ciphertext
+    return iv + ciphertext
 
-def process_bmp(file_path, mode):
+def process_bmp(file_path, output_file, mode):
     with open(file_path, 'rb') as f:
         header = f.read(54)  # Adjust if the header is 138 bytes
         data = f.read()
@@ -45,9 +45,11 @@ def process_bmp(file_path, mode):
         encrypted_data = aes_ecb_encrypt(padded_data, key)
     elif mode == 'cbc':
         encrypted_data = aes_cbc_encrypt(padded_data, key, iv)
+    else:
+        raise ValueError("Not a valid mode")
     
-    with open(f'encrypted_{mode}.bmp', 'wb') as f:
+    with open(output_file, 'wb') as f:
         f.write(header + encrypted_data)
 
 if __name__ == "__main__":
-    process_bmp(sys.argv[1], sys.argv[2])
+    process_bmp(sys.argv[1], sys.argv[2], sys.argv[3])
