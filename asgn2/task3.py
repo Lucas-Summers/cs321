@@ -3,6 +3,7 @@ from Crypto.Util.number import getPrime, inverse
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import hashlib
+import binascii
 
 # RSA Key Generation
 def generate_rsa_keypair(bits=2048, e=65537):
@@ -88,8 +89,22 @@ def rsa_signature_malleability():
     print("Attack Successful:", m3 == verified_m3)
 
 # Run the attacks
-print("=== RSA Malleability Attack ===")
-rsa_malleability_attack()
+#print("=== RSA Malleability Attack ===")
+#rsa_malleability_attack()
 
-print("\n=== RSA Signature Malleability ===")
-rsa_signature_malleability()
+#print("\n=== RSA Signature Malleability ===")
+#rsa_signature_malleability()
+
+public_key, private_key = generate_rsa_keypair()
+message = "Hello, RSA!"
+m_int = int(binascii.hexlify(message.encode()), 16)
+print(f"Original message as integer: {m_int}")
+
+ciphertext = rsa_encrypt(m_int, public_key)
+print(f"Encrypted ciphertext: {ciphertext}")
+
+decrypted_int = rsa_decrypt(ciphertext, private_key)
+print(f"Decrypted integer: {decrypted_int}")
+
+decrypted_message = binascii.unhexlify(hex(decrypted_int)[2:]).decode()
+print(f"Decrypted message: {decrypted_message}")

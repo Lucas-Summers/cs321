@@ -53,11 +53,11 @@ def mitm_attack_key_tampering():
 def mitm_attack_alpha_tampering():
     for case in [1, 2, 3]:  # Test tampering with alpha = 1, q, q-1
         if case == 1:
-            return 1
+            tampered_alpha = 1
         elif case == 2:
-            return q
+            tampered_alpha =  q
         elif case == 3:
-            return q - 1
+            tampered_alpha =  q - 1
         
         # Alice's private and public keys
         X_A = random.randint(1, q - 1)
