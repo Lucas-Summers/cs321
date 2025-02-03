@@ -6,7 +6,6 @@ import concurrent.futures
 from tqdm import tqdm
 
 nltk.download('words')
-
 # Load wordlist from NLTK corpus (filtering words between 6 and 10 characters)
 wordlist = [w.lower() for w in words.words() if 6 <= len(w) <= 10]
 
@@ -38,13 +37,13 @@ def crack_user_password(user, salt, hashed_password):
         with tqdm(total=len(wordlist), desc=f"Cracking {user}", unit=" tries") as pbar:
             for future in concurrent.futures.as_completed(future_to_word):
                 word = future_to_word[future]
-                if future.result():  # If password matches
+                if future.result():
                     end_time = time.time()
                     print(f"\n✅ Password for {user}: {word} (Time: {end_time - start_time:.2f}s)")
                     return user, word, end_time - start_time
-                pbar.update(1)  # Update progress bar
+                pbar.update(1)
 
-    return user, None, None  # If not cracked
+    return user, None, None
 
 
 def parallel_brute_force_bcrypt(user_data):
@@ -62,11 +61,10 @@ def parallel_brute_force_bcrypt(user_data):
     return cracked_passwords
 
 if __name__ == "__main__":
-    shadow_file = "shadow.txt"  # Replace with actual filename
+    shadow_file = "shadow.txt"
     user_data = parse_shadow_file(shadow_file)
     cracked_passwords = parallel_brute_force_bcrypt(user_data)
 
-    # Log results
     with open("cracked_results.txt", "w") as f:
         for user, (password, time_taken) in cracked_passwords.items():
             f.write(f"{user}: {password}, Time: {time_taken:.2f}s\n")
