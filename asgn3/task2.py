@@ -8,9 +8,9 @@ from tqdm import tqdm
 nltk.download('words')
 # Load wordlist from NLTK corpus (filtering words between 6 and 10 characters)
 wordlist = [w.lower() for w in words.words() if 6 <= len(w) <= 10]
+print(len(wordlist))
 
 def parse_shadow_file(filename):
-    """Parses the shadow file to extract user credentials."""
     user_data = {}
     with open(filename, "r") as f:
         for line in f:
@@ -24,11 +24,9 @@ def parse_shadow_file(filename):
     return user_data
 
 def check_password(candidate, hashed_password):
-    """Checks if a candidate password matches the bcrypt hash."""
     return bcrypt.checkpw(candidate.encode(), hashed_password.encode())
 
 def crack_user_password(user, salt, hashed_password):
-    """Attempts to crack bcrypt hashes using multithreading with a progress bar."""
     start_time = time.time()
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
@@ -47,7 +45,6 @@ def crack_user_password(user, salt, hashed_password):
 
 
 def parallel_brute_force_bcrypt(user_data):
-    """Cracks multiple bcrypt passwords in parallel."""
     cracked_passwords = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:

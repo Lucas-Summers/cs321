@@ -4,26 +4,18 @@ import time
 import matplotlib.pyplot as plt
 
 def sha256_hash(data):
-    """Compute SHA-256 hash of the input data and return as a hex string."""
     return hashlib.sha256(data.encode()).hexdigest()
 
 def bit_flip(string, bit_pos):
-    """Flip a single bit at bit_pos in a binary string representation."""
     byte_list = bytearray(string.encode())
     byte_list[bit_pos // 8] ^= 1 << (bit_pos % 8)  # Flip the bit
     return byte_list.decode(errors='ignore')
 
 def truncate_hash(hex_digest, bits):
-    """Truncate a SHA-256 hash to the first `bits` bits."""
     binary_digest = bin(int(hex_digest, 16))[2:].zfill(256)
     return binary_digest[:bits]
 
 def find_collision(bits, method="birthday"):
-    """
-    Find a collision for a truncated hash output.
-    - method = "birthday" (default): Uses the Birthday Paradox approach.
-    - method = "weak": Tries to find a collision for a target hash.
-    """
     start_time = time.time()
     hash_dict = {}
     attempts = 0
@@ -50,7 +42,6 @@ def find_collision(bits, method="birthday"):
         attempts += 1
 
 def experiment():
-    """Run collision tests for different bit sizes and plot results."""
     bit_sizes = list(range(8, 51, 2))  # 8-bit to 50-bit truncation in steps of 2
     num_inputs_list = []
     time_list = []
